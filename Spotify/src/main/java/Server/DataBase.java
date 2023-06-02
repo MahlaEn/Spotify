@@ -1,5 +1,7 @@
-package org.example;
+package Server;
 
+import Shared.Request;
+import Shared.Response;
 import org.json.JSONObject;
 
 import java.sql.*;

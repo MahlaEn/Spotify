@@ -1,4 +1,4 @@
-package org.example;
+package Shared;
 
 import org.json.JSONObject;
 

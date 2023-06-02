@@ -1,18 +1,15 @@
-package org.example;
+package Client;
 
+import Shared.Request;
+import Shared.Response;
+import org.json.JSONObject;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.UnknownHostException;
-import java.sql.SQLException;
-import java.sql.SQLOutput;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Scanner;
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
 
 
 public class ClientMain {
