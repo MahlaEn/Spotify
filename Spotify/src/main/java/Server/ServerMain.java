@@ -4,9 +4,7 @@ import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -25,10 +23,8 @@ public class ServerMain {
         while(true){
             try{
                 Socket socket=serverSocket.accept();
-                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                 System.out.println("New client connected: " + socket.getRemoteSocketAddress());
-                ClientHandler handler = new ClientHandler(socket,out,in);
+                ClientHandler handler = new ClientHandler(socket);
                 clients.add(handler);
                 handler.start();
             }
@@ -44,24 +40,25 @@ public class ServerMain {
 
     private class ClientHandler extends Thread{
         private Socket socket;
-        private ObjectOutputStream out;
-        private ObjectInputStream in;
+        private BufferedReader in;
+        private PrintWriter out;
 
-        public ClientHandler(Socket socket, ObjectOutputStream out, ObjectInputStream in) throws IOException {
+        public ClientHandler(Socket socket) throws IOException {
             this.socket = socket;
-            this.out = out;
-            this.in = in;
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.out = new PrintWriter(socket.getOutputStream(), true);
         }
         public void run() {
             Response response;
             try{
                 Request request = new Request();
-                request.setJson(new JSONObject((String) in.readObject()));//receive request from client
+                request.setJson(new JSONObject( in.readLine()));//receive request from client
                 while(request!=null){
                     response = handle(request);//create new response
-                    out.writeObject(response.getJson().toString());//send response to client
+                    System.out.println(request.getJson());
+                    out.println(response.getJson().toString());//send response to client
 
-                    request.setJson(new JSONObject((String) in.readObject()));//receive request from client
+                    request.setJson(new JSONObject( in.readLine()));//receive request from client
                 }
             }
             catch (Exception e){
@@ -82,14 +79,20 @@ public class ServerMain {
     public static Response handle(Request request) throws SQLException {
         Response response=new Response();
         JSONObject req=request.getJson();
+        DataBase DB=new DataBase();
         switch (req.getString("Command")){
             case "Login":
-                DataBase DB=new DataBase();
                 response= DB.handle(request);
                 return response;
 
             case "SignUp":
 
+
+                return response;
+
+            case "Music library":
+                response = DB.handle(request);
+                return response;
         }
         return response;
     }

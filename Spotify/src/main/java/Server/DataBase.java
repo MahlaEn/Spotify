@@ -49,25 +49,32 @@ public class DataBase {
 
     public static Response handle(Request request) throws SQLException {
         Response response = new Response();
-        JSONObject req=request.getJson();
-        switch (req.getString("Command")){
+        JSONObject json=request.getJson();
+        switch (json.getString("Command")){
             case "Login":
-                String username = req.getString("Username");
-                String password = req.getString("Password");
-                ResultSet resultSet=query("SELECT * FROM \"Steam\".\"accounts\" \n");
+                String username = json.getString("Username");
+                String password = json.getString("Password");
+                ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"User\" \n");
                 while(resultSet.next()){
                     if(resultSet.getString("Username").equals(username) && resultSet.getString("Password").equals(password)){
-                        req.put("Status","Successfully login");
-                        response.setJson(req);
+                        json.put("Status","Successfully login");
+                        response.setJson(json);
                         return response;
                     }
                 }
-                req.put("Status","Fail login");
-                response.setJson(req);
+                json.put("Status","Fail login");
+                response.setJson(json);
                 return response;
 
             case "SignUp":
 
+
+                return response;
+
+            case "Music library":
+                json.put("Status","songs were displayed");
+                response.setJson(json);
+                return response;
         }
 
         return response;
