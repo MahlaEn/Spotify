@@ -55,12 +55,13 @@ public class ServerMain {
         public void run() {
             Response response;
             try{
-                Request request=(Request)in.readObject();//receive request from client
+                Request request = new Request();
+                request.setJson(new JSONObject((String) in.readObject()));//receive request from client
                 while(request!=null){
                     response = handle(request);//create new response
-                    out.writeObject(response);//send response to client
+                    out.writeObject(response.getJson().toString());//send response to client
 
-                    request=(Request)in.readObject();//receive request from client
+                    request.setJson(new JSONObject((String) in.readObject()));//receive request from client
                 }
             }
             catch (Exception e){
@@ -83,7 +84,8 @@ public class ServerMain {
         JSONObject req=request.getJson();
         switch (req.getString("Command")){
             case "Login":
-                response= DataBase.handle(request);
+                DataBase DB=new DataBase();
+                response= DB.handle(request);
                 return response;
 
             case "SignUp":
