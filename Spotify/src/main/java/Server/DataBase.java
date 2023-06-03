@@ -50,11 +50,13 @@ public class DataBase {
     public static Response handle(Request request) throws SQLException {
         Response response = new Response();
         JSONObject json=request.getJson();
+        String username,password;
+        ResultSet resultSet;
         switch (json.getString("Command")){
             case "Login":
-                String username = json.getString("Username");
-                String password = json.getString("Password");
-                ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"User\" \n");
+                username = json.getString("Username");
+                password = json.getString("Password");
+                resultSet=query("SELECT * FROM \"Spotify\".\"User\" \n");
                 while(resultSet.next()){
                     if(resultSet.getString("Username").equals(username) && resultSet.getString("Password").equals(password)){
                         json.put("Status","Successfully login");
@@ -67,8 +69,28 @@ public class DataBase {
                 return response;
 
             case "SignUp":
+                username=json.getString("username");
+                password=json.getString("password");
+                resultSet=query("SELECT * FROM \"Spotify\".\"User\" WHERE \"Username\" = " + "'" + username + "'");
+                if(resultSet.next()) {
+                    json.put("Status", "Fail signup");
+                    response.setJson(json);
+                    return response;
+                }
+                json.put("Status","Successfully signup");
+                response.setJson(json);
+                String ID="1";
+                String email = json.getString("Email");
+                String imagePath = json.getString("ImagePath");
+                if(imagePath.charAt(0)=='"'){
+                    imagePath=imagePath.substring(1,imagePath.length()-1);//Remove additional character
+                }
+                String playlistID="1";
+                String date=json.getString("Birthday");
+                String sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" + ID + "','" + username + "', '" +
+                        email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID + "')";
 
-
+                query(sql);
                 return response;
 
             case "Music library":

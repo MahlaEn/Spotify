@@ -53,11 +53,11 @@ public class ServerMain {
             try{
                 Request request = new Request();
                 request.setJson(new JSONObject( in.readLine()));//receive request from client
-                while(request!=null){
+                while(request.getJson()!=null){
                     response = handle(request);//create new response
-                    System.out.println(request.getJson());
-                    out.println(response.getJson().toString());//send response to client
-
+                    if(response.getJson()!=null) {
+                        out.println(response.getJson().toString());//send response to client
+                    }
                     request.setJson(new JSONObject( in.readLine()));//receive request from client
                 }
             }
@@ -86,8 +86,7 @@ public class ServerMain {
                 return response;
 
             case "SignUp":
-
-
+                response= DB.handle(request);
                 return response;
 
             case "Music library":

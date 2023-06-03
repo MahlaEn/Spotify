@@ -30,10 +30,13 @@ public class ClientMain {
             out.println(request.getJson().toString());//send request to server
             response.setJson(new JSONObject(in.readLine()));//receive response from server
 
-            while (response != null) {
-                request = handle(response);//create new request
-                out.println(request.getJson().toString());////send request to server
+            while (response.getJson() != null) {
+                System.out.println(response.getJson());
 
+                request = handle(response);//create new request
+                if(request.getJson()!=null) {
+                    out.println(request.getJson().toString());////send request to server
+                }
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
             }
         } catch (UnknownHostException e) {
@@ -45,23 +48,40 @@ public class ClientMain {
         }
     }
     public static Request ShowMainMenu(){
-        System.out.println("Enter your command :\n 1)Login\n 2)SignUp");
+        System.out.println("Enter your command :\n1)Login\n2)SignUp");
         int command=inp.nextInt();
         Request request = new Request();
+        JSONObject json=new JSONObject();
         switch (command){
             case 1://Login
                 System.out.println("Username :");
                 String username=inp.next();
                 System.out.println("Password :");
                 String password= inp.next();
-                JSONObject json=new JSONObject();
                 json.put("Command","Login");
                 json.put("Username",username);
                 json.put("Password",password);
                 request.setJson(json);//create request
                 break;
             case 2://SignUp
-
+                System.out.println("Username : ");
+                username=inp.next();
+                System.out.println("Password : ");
+                password=inp.next();
+                System.out.println("Email address :");
+                String Email=inp.next();
+                System.out.println("Enter an imagePath for your account profile");
+                String ImagePath=inp.next();
+                System.out.println("Birth Date : ");
+                String date=inp.next();
+                json = new JSONObject();
+                json.put("Command","SignUp");
+                json.put("username", username);
+                json.put("password", password);
+                json.put("Birthday",date);
+                json.put("Email",Email);
+                json.put("ImagePath",ImagePath);
+                request.setJson(json);//create request
                 break;
         }
         return request;
@@ -79,8 +99,8 @@ public class ClientMain {
         return request;
     }
     public static Request ShowUserMenu() throws SQLException {
-        System.out.println("Enter your command :\n 1)Music library\n 2)Search artist name\n" +
-                "3)Search song title\n 4)Search album title\n 5)Search genre\n 6)View personal profile page");
+        System.out.println("Enter your command : \n1)Music library \n2)Search artist name\n" +
+                "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page");
         int command=inp.nextInt();
         JSONObject json;
         Request request = new Request();
@@ -127,11 +147,11 @@ public class ClientMain {
     }
     public static void toString(ResultSet resultSet) throws SQLException {
         System.out.println(
-                "TrackID: "+resultSet.getString("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
-                        "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getDouble("Album") +
-                        "\nGenre: " + resultSet.getInt("Genre") +
-                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getDouble("ReleaseDate") +
-                        "\nPopularity: " + resultSet.getInt("Popularity") +
+                "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
+                        "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
+                        "\nGenre: " + resultSet.getString("Genre") +
+                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getDate("ReleaseDate") +
+                        "\nPopularity: " + resultSet.getDouble("Popularity") +
                         "\n____________________________________"
         );
     }
