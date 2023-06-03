@@ -90,14 +90,33 @@ public class ClientMain {
             case "Successfully login":
                 System.out.println("WELCOME!");
                 return ShowUserMenu();
-            case "Fail login":
 
-                break;
+            case "Fail login":
+                return ShowMainMenu();
+
             case "Display songs":
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
                 while (response.getJson().has("MusicData")) {
                     System.out.println(response.getJson().getString("MusicData"));
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
+                System.out.println("1)Play song \n2)Back to menu");
+                int command=inp.nextInt();
+                switch (command) {
+                    case 1://play song
+                        System.out.println("Enter song title");
+                        inp.nextLine();
+                        String title=inp.nextLine();
+                        System.out.println("Enter song artist");
+                        String artist=inp.nextLine();
+                        JSONObject json=new JSONObject();
+                        json.put("Command","Play song");
+                        json.put("Title",title);
+                        json.put("Artist",artist);
+                        request.setJson(json);
+                        return request;
+                    case 2://Back to menu
+                        return ShowUserMenu();
                 }
 
         }

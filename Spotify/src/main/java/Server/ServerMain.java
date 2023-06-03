@@ -102,6 +102,14 @@ public class ServerMain {
                 res.put("Status","Musics was showed");
                 response.setJson(res);
                 return response;
+            case "Play song":
+                String title=req.getString("Title");
+                String artist=req.getString("Artist");
+                response=DB.handle(request);
+                String songPath=response.getJson().getString("songPath");
+                PlayMusic player=new PlayMusic();
+                player.play(songPath);
+                return response;
         }
         return response;
     }

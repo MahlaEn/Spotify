@@ -97,6 +97,18 @@ public class DataBase {
                 json.put("Status","songs were displayed");
                 response.setJson(json);
                 return response;
+
+            case "Play song":
+                String title=json.getString("Title");
+                String artist=json.getString("Artist");
+                resultSet=query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Title\" = " + "'" + title + "'" + "AND" + "\"Artist\" = " + "'" + artist + "'");
+                if(resultSet.next()) {
+                    json.put("Status", "Find song path");
+                    json.put("songPath",resultSet.getString("MusicPath"));
+                    response.setJson(json);
+                    return response;
+                }
+
         }
 
         return response;
