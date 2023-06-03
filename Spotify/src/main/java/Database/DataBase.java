@@ -1,4 +1,4 @@
-package Server;
+package Database;
 
 import Shared.Request;
 import Shared.Response;

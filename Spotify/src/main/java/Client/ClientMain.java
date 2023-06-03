@@ -1,6 +1,6 @@
 package Client;
 
-import Server.DataBase;
+import Database.DataBase;
 import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
@@ -31,7 +31,6 @@ public class ClientMain {
             response.setJson(new JSONObject(in.readLine()));//receive response from server
 
             while (response.getJson() != null) {
-                System.out.println(response.getJson());
 
                 request = handle(response);//create new request
                 if(request.getJson()!=null) {
