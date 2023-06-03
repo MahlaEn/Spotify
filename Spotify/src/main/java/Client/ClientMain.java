@@ -149,7 +149,7 @@ public class ClientMain {
                 "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
                         "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
                         "\nGenre: " + resultSet.getString("Genre") +
-                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getDate("ReleaseDate") +
+                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
                         "\nPopularity: " + resultSet.getDouble("Popularity") +
                         "\n____________________________________"
         );

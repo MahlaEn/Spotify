@@ -1,6 +1,7 @@
 package Server;
 
 import Database.DataBase;
+import Database.ImportData;
 import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
@@ -18,8 +19,9 @@ public class ServerMain {
 
     private ServerSocket serverSocket;
     private ArrayList<ClientHandler> clients = new ArrayList<>();
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
         ServerMain server = new ServerMain(2345);
+        new ImportData();
         server.start();
     }
     public void start(){
