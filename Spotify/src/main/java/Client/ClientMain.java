@@ -1,6 +1,5 @@
 package Client;
 
-import Database.DataBase;
 import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
@@ -8,7 +7,6 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.Socket;
 import java.rmi.UnknownHostException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -32,7 +30,7 @@ public class ClientMain {
 
             while (response.getJson() != null) {
 
-                request = handle(response);//create new request
+                request = handle(response,out,in);//create new request
                 if(request.getJson()!=null) {
                     out.println(request.getJson().toString());////send request to server
                 }
@@ -85,7 +83,7 @@ public class ClientMain {
         }
         return request;
     }
-    public static Request handle(Response response) throws SQLException {
+    public static Request handle(Response response,PrintWriter out,BufferedReader in) throws SQLException, IOException {
         Request request=new Request();
         JSONObject resp=response.getJson();
         switch (resp.getString("Status")){
@@ -93,6 +91,14 @@ public class ClientMain {
                 System.out.println("WELCOME!");
                 return ShowUserMenu();
             case "Fail login":
+
+                break;
+            case "Display songs":
+                response.setJson(new JSONObject(in.readLine()));//receive response from server
+                while (response.getJson().has("MusicData")) {
+                    System.out.println(response.getJson().getString("MusicData"));
+                    response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
 
         }
         return request;
@@ -107,8 +113,7 @@ public class ClientMain {
             case 1://Music library
                 json=new JSONObject();
                 json.put("Command","Music library");
-                ShowMusics();
-                request.setJson(json);
+                request.setJson(json);//create request
                 break;
 
             case 2://Search artist name
@@ -137,21 +142,4 @@ public class ClientMain {
         return request;
     }
 
-    private static void ShowMusics() throws SQLException {
-        DataBase DB=new DataBase();
-        ResultSet resultSet=DB.query("SELECT * FROM \"Spotify\".\"Music\" \n");
-        while(resultSet.next()){
-            toString(resultSet);
-        }
-    }
-    public static void toString(ResultSet resultSet) throws SQLException {
-        System.out.println(
-                "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
-                        "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
-                        "\nGenre: " + resultSet.getString("Genre") +
-                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
-                        "\nPopularity: " + resultSet.getDouble("Popularity") +
-                        "\n____________________________________"
-        );
-    }
 }

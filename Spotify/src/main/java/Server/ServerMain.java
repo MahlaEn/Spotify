@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -60,7 +61,7 @@ public class ServerMain {
                 Request request = new Request();
                 request.setJson(new JSONObject( in.readLine()));//receive request from client
                 while(request.getJson()!=null){
-                    response = handle(request);//create new response
+                    response = handle(request,out);//create new response
                     if(response.getJson()!=null) {
                         out.println(response.getJson().toString());//send response to client
                     }
@@ -82,7 +83,7 @@ public class ServerMain {
             }
         }
     }
-    public static Response handle(Request request) throws SQLException {
+    public static Response handle(Request request,PrintWriter out) throws SQLException {
         Response response=new Response();
         JSONObject req=request.getJson();
         DataBase DB=new DataBase();
@@ -96,9 +97,34 @@ public class ServerMain {
                 return response;
 
             case "Music library":
-                response = DB.handle(request);
+                ShowMusics(out);
+                JSONObject res=new JSONObject();
+                res.put("Status","Musics was showed");
+                response.setJson(res);
                 return response;
         }
         return response;
+    }
+    public static void ShowMusics(PrintWriter out) throws SQLException {
+        DataBase DB=new DataBase();
+        ResultSet resultSet=DB.query("SELECT * FROM \"Spotify\".\"Music\" \n");
+        JSONObject res=new JSONObject();
+        res.put("Status","Display songs");
+        out.println(res);
+        while(resultSet.next()){
+            JSONObject json=new JSONObject();
+            json.put("MusicData",toString(resultSet));
+            out.println(json);
+        }
+    }
+    public static String toString(ResultSet resultSet) throws SQLException {
+        return (
+                "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
+                        "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
+                        "\nGenre: " + resultSet.getString("Genre") +
+                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
+                        "\nPopularity: " + resultSet.getDouble("Popularity") +
+                        "\n____________________________________"
+        );
     }
 }
