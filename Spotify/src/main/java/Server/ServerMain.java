@@ -4,12 +4,10 @@ import Database.DataBase;
 import Database.ImportData;
 import Shared.Request;
 import Shared.Response;
+import javazoom.jl.decoder.JavaLayerException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
@@ -19,6 +17,8 @@ import java.util.ArrayList;
 public class ServerMain {
 
     private ServerSocket serverSocket;
+
+    static MusicPlayer player=new MusicPlayer();
     private ArrayList<ClientHandler> clients = new ArrayList<>();
     public static void main(String[] args) throws IOException, SQLException {
         ServerMain server = new ServerMain(2345);
@@ -83,17 +83,16 @@ public class ServerMain {
             }
         }
     }
-    public static Response handle(Request request,PrintWriter out) throws SQLException {
+    public static Response handle(Request request,PrintWriter out) throws SQLException, FileNotFoundException, JavaLayerException {
         Response response=new Response();
         JSONObject req=request.getJson();
-        DataBase DB=new DataBase();
         switch (req.getString("Command")){
             case "Login":
-                response= DB.handle(request);
+                response= DataBase.handle(request);
                 return response;
 
             case "SignUp":
-                response= DB.handle(request);
+                response= DataBase.handle(request);
                 return response;
 
             case "Music library":
@@ -103,14 +102,29 @@ public class ServerMain {
                 response.setJson(res);
                 return response;
             case "Play song":
-                String title=req.getString("Title");
-                String artist=req.getString("Artist");
-                response=DB.handle(request);
-                String songPath=response.getJson().getString("songPath");
-                PlayMusic player=new PlayMusic();
-                player.play(songPath);
-                return response;
+                return playSong(request);
+            case "Pause song":
+                return pauseSong(request);
         }
+        return response;
+    }
+
+    private static Response pauseSong(Request request) {
+        Response response = new Response();
+        JSONObject json=new JSONObject();
+        json.put("Status","pauseSong");
+        response.setJson(json);
+        player.pause();
+        return response;
+    }
+
+    private static Response playSong(Request request) throws SQLException {
+        JSONObject req=request.getJson();
+        String title=req.getString("Title");
+        String artist=req.getString("Artist");
+        Response response = DataBase.handle(request);
+        String songPath=response.getJson().getString("songPath");
+        player.play(songPath);
         return response;
     }
     public static void ShowMusics(PrintWriter out) throws SQLException {

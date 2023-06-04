@@ -118,6 +118,17 @@ public class ClientMain {
                     case 2://Back to menu
                         return ShowUserMenu();
                 }
+            case "Find song path":
+                System.out.println("1)Pause");
+                command=inp.nextInt();
+                switch (command){
+                    case 1://pause
+                        JSONObject json=new JSONObject();
+                        json.put("Command","Pause song");
+                        json.put("songPath",response.getJson().getString("songPath"));
+                        request.setJson(json);
+                        return request;
+                }
 
         }
         return request;
