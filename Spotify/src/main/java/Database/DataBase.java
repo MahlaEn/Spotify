@@ -118,6 +118,15 @@ public class DataBase {
                 response.setJson(json);
                 return response;
 
+            case "Search album":
+                json.put("Status","Album was searched");
+                response.setJson(json);
+                return response;
+
+            case "Search genre":
+                json.put("Status","Genre was searched");
+                response.setJson(json);
+                return response;
         }
 
         return response;

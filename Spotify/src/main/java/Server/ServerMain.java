@@ -121,15 +121,54 @@ public class ServerMain {
                 res.put("Status","Searched title");
                 response.setJson(res);
                 return response;
+            case "Search album":
+                SearchAlbum(request,out);
+                res=new JSONObject();
+                res.put("Status","Searched album");
+                response.setJson(res);
+                return response;
+            case "Search genre":
+                SearchGenre(request,out);
+                res=new JSONObject();
+                res.put("Status","Searched genre");
+                response.setJson(res);
+                return response;
         }
         return response;
+    }
+
+    private static void SearchGenre(Request request, PrintWriter out) throws SQLException {
+        JSONObject req=request.getJson();
+        String genre=req.getString("Genre");
+        JSONObject res=new JSONObject();
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Genre\" = " + "'" + genre + "'");
+        res.put("Status","Searching genre");
+        out.println(res);
+        while(resultSet.next()){
+            JSONObject json=new JSONObject();
+            json.put("Music",toString(resultSet));
+            out.println(json);
+        }
+    }
+
+    private static void SearchAlbum(Request request, PrintWriter out) throws SQLException {
+        JSONObject req=request.getJson();
+        String album=req.getString("Album");
+        JSONObject res=new JSONObject();
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Album\" = " + "'" + album + "'");
+        res.put("Status","Searching album");
+        out.println(res);
+        while(resultSet.next()){
+            JSONObject json=new JSONObject();
+            json.put("Music",toString(resultSet));
+            out.println(json);
+        }
     }
 
     private static void SearchTitle(Request request, PrintWriter out) throws SQLException {
         JSONObject req=request.getJson();
         String title=req.getString("Title");
         JSONObject res=new JSONObject();
-        System.out.println(title);
         ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Title\" = " + "'" + title + "'");
         res.put("Status","Searching title");
         out.println(res);
@@ -144,7 +183,6 @@ public class ServerMain {
         JSONObject req=request.getJson();
         String artist=req.getString("Artist");
         JSONObject res=new JSONObject();
-        System.out.println(artist);
         ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Artist\" = " + "'" + artist + "'");
         res.put("Status","Searching artist");
         out.println(res);

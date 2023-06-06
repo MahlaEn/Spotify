@@ -129,14 +129,9 @@ public class ClientMain {
                         request.setJson(json);
                         return request;
                 }
-            case "Searching artist":
-                response.setJson(new JSONObject(in.readLine()));//receive response from server
-                while (response.getJson().has("Music")) {
-                    System.out.println(response.getJson().getString("Music"));
-                    response.setJson(new JSONObject(in.readLine()));//receive response from server
-                }
+            case "pauseSong":
                 return ShowUserMenu();
-            case "Searching title":
+            case "Searching artist", "Searching title", "Searching album","Searching genre":
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
                 while (response.getJson().has("Music")) {
                     System.out.println(response.getJson().getString("Music"));
@@ -181,7 +176,23 @@ public class ClientMain {
                 break;
 
             case 4://Search album title
+                inp.nextLine();
+                System.out.println("Album name:");
+                String album=inp.nextLine();
+                json=new JSONObject();
+                json.put("Command","Search album");
+                json.put("Album",album);
+                request.setJson(json);//create request
+                break;
 
+            case 5://Search genre
+                inp.nextLine();
+                System.out.println("Enter genre:");
+                String genre=inp.nextLine();
+                json=new JSONObject();
+                json.put("Command","Search genre");
+                json.put("Genre",genre);
+                request.setJson(json);//create request
                 break;
         }
 

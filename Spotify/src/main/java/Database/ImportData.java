@@ -10,7 +10,7 @@ public class ImportData {
     public ImportData() throws SQLException {
         ArrayList<Music>musics=new ArrayList<>();
         DataBase dataBase=new DataBase();
-        Music soldierside=new Music(1,"Soldier side","System of a down","Mamerize","hard rock","3,39","2005",8.9,"D:\\Uni\\Ap\\Spotify\\Spotify\\src\\main\\resources\\SoldierSide.mp3");
+        Music soldierside=new Music(1,"Soldier side","System of a down","Mezmerize","hard rock","3,39","2005",8.9,"D:\\Uni\\Ap\\Spotify\\Spotify\\src\\main\\resources\\SoldierSide.mp3");
         musics.add(soldierside);
 
         for(Music music : musics){
