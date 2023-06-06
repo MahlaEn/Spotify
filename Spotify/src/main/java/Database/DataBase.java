@@ -108,6 +108,15 @@ public class DataBase {
                     response.setJson(json);
                     return response;
                 }
+            case "Search artist":
+                json.put("Status","Artist was searched");
+                response.setJson(json);
+                return response;
+
+            case "Search title":
+                json.put("Status","Title was searched");
+                response.setJson(json);
+                return response;
 
         }
 

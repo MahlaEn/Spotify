@@ -129,6 +129,20 @@ public class ClientMain {
                         request.setJson(json);
                         return request;
                 }
+            case "Searching artist":
+                response.setJson(new JSONObject(in.readLine()));//receive response from server
+                while (response.getJson().has("Music")) {
+                    System.out.println(response.getJson().getString("Music"));
+                    response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
+                return ShowUserMenu();
+            case "Searching title":
+                response.setJson(new JSONObject(in.readLine()));//receive response from server
+                while (response.getJson().has("Music")) {
+                    System.out.println(response.getJson().getString("Music"));
+                    response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
+                return ShowUserMenu();
 
         }
         return request;
@@ -147,8 +161,9 @@ public class ClientMain {
                 break;
 
             case 2://Search artist name
+                inp.nextLine();
                 System.out.println("Artist name :");
-                String artist=inp.next();
+                String artist=inp.nextLine();
                 json=new JSONObject();
                 json.put("Command","Search artist");
                 json.put("Artist",artist);
@@ -156,11 +171,12 @@ public class ClientMain {
                 break;
 
             case 3://Search song title
+                inp.nextLine();
                 System.out.println("Song title :");
-                String song=inp.next();
+                String title=inp.nextLine();
                 json=new JSONObject();
-                json.put("Command","Search song");
-                json.put("song",song);
+                json.put("Command","Search title");
+                json.put("Title",title);
                 request.setJson(json);//create request
                 break;
 

@@ -4,10 +4,12 @@ import Database.DataBase;
 import Database.ImportData;
 import Shared.Request;
 import Shared.Response;
-import javazoom.jl.decoder.JavaLayerException;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.ResultSet;
@@ -83,7 +85,7 @@ public class ServerMain {
             }
         }
     }
-    public static Response handle(Request request,PrintWriter out) throws SQLException, FileNotFoundException, JavaLayerException {
+    public static Response handle(Request request,PrintWriter out) throws SQLException {
         Response response=new Response();
         JSONObject req=request.getJson();
         switch (req.getString("Command")){
@@ -101,12 +103,56 @@ public class ServerMain {
                 res.put("Status","Musics was showed");
                 response.setJson(res);
                 return response;
+
             case "Play song":
                 return playSong(request);
+
             case "Pause song":
                 return pauseSong(request);
+            case "Search artist":
+                SearchArtist(request,out);
+                res=new JSONObject();
+                res.put("Status","Searched artist");
+                response.setJson(res);
+                return response;
+            case "Search title":
+                SearchTitle(request,out);
+                res=new JSONObject();
+                res.put("Status","Searched title");
+                response.setJson(res);
+                return response;
         }
         return response;
+    }
+
+    private static void SearchTitle(Request request, PrintWriter out) throws SQLException {
+        JSONObject req=request.getJson();
+        String title=req.getString("Title");
+        JSONObject res=new JSONObject();
+        System.out.println(title);
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Title\" = " + "'" + title + "'");
+        res.put("Status","Searching title");
+        out.println(res);
+        while(resultSet.next()){
+            JSONObject json=new JSONObject();
+            json.put("Music",toString(resultSet));
+            out.println(json);
+        }
+    }
+
+    private static void SearchArtist(Request request, PrintWriter out) throws SQLException {
+        JSONObject req=request.getJson();
+        String artist=req.getString("Artist");
+        JSONObject res=new JSONObject();
+        System.out.println(artist);
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Artist\" = " + "'" + artist + "'");
+        res.put("Status","Searching artist");
+        out.println(res);
+        while(resultSet.next()){
+            JSONObject json=new JSONObject();
+            json.put("Music",toString(resultSet));
+            out.println(json);
+        }
     }
 
     private static Response pauseSong(Request request) {
@@ -128,8 +174,7 @@ public class ServerMain {
         return response;
     }
     public static void ShowMusics(PrintWriter out) throws SQLException {
-        DataBase DB=new DataBase();
-        ResultSet resultSet=DB.query("SELECT * FROM \"Spotify\".\"Music\" \n");
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" \n");
         JSONObject res=new JSONObject();
         res.put("Status","Display songs");
         out.println(res);
