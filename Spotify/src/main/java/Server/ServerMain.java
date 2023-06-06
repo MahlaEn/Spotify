@@ -24,6 +24,7 @@ public class ServerMain {
     private ArrayList<ClientHandler> clients = new ArrayList<>();
     public static void main(String[] args) throws IOException, SQLException {
         ServerMain server = new ServerMain(2345);
+        new DataBase();
         new ImportData();
         server.start();
     }

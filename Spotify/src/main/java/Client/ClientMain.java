@@ -87,7 +87,7 @@ public class ClientMain {
         Request request=new Request();
         JSONObject resp=response.getJson();
         switch (resp.getString("Status")){
-            case "Successfully login":
+            case "Successfully login","Successfully signup":
                 System.out.println("WELCOME!");
                 return ShowUserMenu();
 
