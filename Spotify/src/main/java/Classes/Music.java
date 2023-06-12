@@ -1,7 +1,7 @@
 package Classes;
 
 public class Music {
-    private int trackID;
+    private String trackID;
     private String title;
     private String artist;
     private String album;
@@ -10,7 +10,7 @@ public class Music {
     private String releaseDate;
     private double popularity;
     private String MusicPath;
-    public Music(int trackID, String title, String artist, String album, String genre, String duration, String releaseDate, double popularity,String MusicPath) {
+    public Music(String trackID, String title, String artist, String album, String genre, String duration, String releaseDate, double popularity, String MusicPath) {
         this.trackID = trackID;
         this.title = title;
         this.artist = artist;
@@ -22,11 +22,11 @@ public class Music {
         this.MusicPath=MusicPath;
     }
 
-    public int getTrackID() {
+    public String getTrackID() {
         return trackID;
     }
 
-    public void setTrackID(int trackID) {
+    public void setTrackID(String trackID) {
         this.trackID = trackID;
     }
 

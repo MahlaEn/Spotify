@@ -5,15 +5,16 @@ import Shared.Response;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.UUID;
 
 public class DataBase {
     static Statement statement;
     static private Connection connection;
-    public DataBase() {
+    public static void Init() {
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/AP","postgres","12345678");
-            statement = connection.createStatement();
+            DataBase.connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/AP","postgres","12345678");
+            DataBase.statement = connection.createStatement();
         }
         catch (Exception e){
             e.printStackTrace();
@@ -79,16 +80,16 @@ public class DataBase {
                 }
                 json.put("Status","Successfully signup");
                 response.setJson(json);
-                String ID="1";
                 String email = json.getString("Email");
                 String imagePath = json.getString("ImagePath");
                 if(imagePath.charAt(0)=='"'){
                     imagePath=imagePath.substring(1,imagePath.length()-1);//Remove additional character
                 }
-                String playlistID="1";
+                UUID ID = UUID.randomUUID();
+                String playlistID=UUID.randomUUID().toString();
                 String date=json.getString("Birthday");
-                String sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" + ID + "','" + username + "', '" +
-                        email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID + "')";
+                String sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" +  username + "', '" +
+                        email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID.hashCode() + "','" + ID.hashCode()  + "')";
 
                 query(sql);
                 return response;
@@ -128,7 +129,6 @@ public class DataBase {
                 response.setJson(json);
                 return response;
         }
-
         return response;
     }
 }

@@ -22,9 +22,10 @@ public class ServerMain {
 
     static MusicPlayer player=new MusicPlayer();
     private ArrayList<ClientHandler> clients = new ArrayList<>();
+    static DataBase dataBase=new DataBase();
     public static void main(String[] args) throws IOException, SQLException {
         ServerMain server = new ServerMain(2345);
-        new DataBase();
+        DataBase.Init();
         new ImportData();
         server.start();
     }
@@ -90,12 +91,8 @@ public class ServerMain {
         Response response=new Response();
         JSONObject req=request.getJson();
         switch (req.getString("Command")){
-            case "Login":
-                response= DataBase.handle(request);
-                return response;
-
-            case "SignUp":
-                response= DataBase.handle(request);
+            case "Login", "SignUp":
+                response= dataBase.handle(request);
                 return response;
 
             case "Music library":
@@ -225,7 +222,7 @@ public class ServerMain {
     }
     public static String toString(ResultSet resultSet) throws SQLException {
         return (
-                "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
+                "TrackID: "+resultSet.getString("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
                         "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
                         "\nGenre: " + resultSet.getString("Genre") +
                         "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
