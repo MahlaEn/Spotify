@@ -131,6 +131,15 @@ public class ServerMain {
                 res.put("Status","Searched genre");
                 response.setJson(res);
                 return response;
+            case "View profile":
+                JSONObject user=new JSONObject();
+                ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"User\" WHERE \"Username\" = " + "'" + request.getJson().getString("username") + "'");
+                resultSet.next();
+                user.put("user",toString(resultSet,"User"));
+                user.put("Status","Searched profile");
+                response.setJson(user);
+                return response;
+
         }
         return response;
     }
@@ -144,7 +153,7 @@ public class ServerMain {
         out.println(res);
         while(resultSet.next()){
             JSONObject json=new JSONObject();
-            json.put("Music",toString(resultSet));
+            json.put("Music",toString(resultSet,"Music"));
             out.println(json);
         }
     }
@@ -158,7 +167,7 @@ public class ServerMain {
         out.println(res);
         while(resultSet.next()){
             JSONObject json=new JSONObject();
-            json.put("Music",toString(resultSet));
+            json.put("Music",toString(resultSet,"Music"));
             out.println(json);
         }
     }
@@ -172,7 +181,7 @@ public class ServerMain {
         out.println(res);
         while(resultSet.next()){
             JSONObject json=new JSONObject();
-            json.put("Music",toString(resultSet));
+            json.put("Music",toString(resultSet,"Music"));
             out.println(json);
         }
     }
@@ -186,7 +195,7 @@ public class ServerMain {
         out.println(res);
         while(resultSet.next()){
             JSONObject json=new JSONObject();
-            json.put("Music",toString(resultSet));
+            json.put("Music",toString(resultSet,"Music"));
             out.println(json);
         }
     }
@@ -216,18 +225,32 @@ public class ServerMain {
         out.println(res);
         while(resultSet.next()){
             JSONObject json=new JSONObject();
-            json.put("MusicData",toString(resultSet));
+            json.put("MusicData",toString(resultSet,"Music"));
             out.println(json);
         }
     }
-    public static String toString(ResultSet resultSet) throws SQLException {
-        return (
-                "TrackID: "+resultSet.getString("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
-                        "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
-                        "\nGenre: " + resultSet.getString("Genre") +
-                        "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
-                        "\nPopularity: " + resultSet.getDouble("Popularity") +
-                        "\n____________________________________"
-        );
+    public static String toString(ResultSet resultSet,String type) throws SQLException {
+        switch (type){
+            case "Music":
+                return (
+                    "TrackID: "+resultSet.getString("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
+                            "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
+                            "\nGenre: " + resultSet.getString("Genre") +
+                            "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
+                            "\nPopularity: " + resultSet.getDouble("Popularity") +
+                            "\n____________________________________"
+            );
+            case "User":
+                return (
+                        "Username: "+resultSet.getString("Username") + "\nEmail: "+ resultSet.getString("Email") +
+                    "\nPassword: " + resultSet.getString("Password") + "\nBirthday: " + resultSet.getString("Birthday") +
+                    "\nPlaylistID: " + resultSet.getString("PlaylistID") +
+                    "\nUserID: " + resultSet.getString("UserID") +
+                    "\n____________________________________"
+                );
+
+        }
+
+        return type;
     }
 }

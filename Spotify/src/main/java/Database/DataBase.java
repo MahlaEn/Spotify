@@ -55,8 +55,8 @@ public class DataBase {
         ResultSet resultSet;
         switch (json.getString("Command")){
             case "Login":
-                username = json.getString("Username");
-                password = json.getString("Password");
+                username = json.getString("username");
+                password = json.getString("password");
                 resultSet=query("SELECT * FROM \"Spotify\".\"User\" \n");
                 while(resultSet.next()){
                     if(resultSet.getString("Username").equals(username) && resultSet.getString("Password").equals(password)){

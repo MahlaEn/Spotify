@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 public class ClientMain {
     static Scanner inp = new Scanner(System.in);
+    static JSONObject user=new JSONObject();
     public static void main(String[] args) throws IOException {
         try {
             Socket socket = new Socket("127.0.0.1", 2345);
@@ -56,8 +57,8 @@ public class ClientMain {
                 System.out.println("Password :");
                 String password= inp.next();
                 json.put("Command","Login");
-                json.put("Username",username);
-                json.put("Password",password);
+                json.put("username",username);
+                json.put("password",password);
                 request.setJson(json);//create request
                 break;
             case 2://SignUp
@@ -89,6 +90,7 @@ public class ClientMain {
         switch (resp.getString("Status")){
             case "Successfully login","Successfully signup":
                 System.out.println("WELCOME!");
+                user.put("username",resp.getString("username"));
                 return ShowUserMenu();
 
             case "Fail login":
@@ -138,11 +140,13 @@ public class ClientMain {
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
                 return ShowUserMenu();
-
+            case "Searched profile":
+                System.out.println(response.getJson().getString("user"));
         }
+
         return request;
     }
-    public static Request ShowUserMenu() throws SQLException {
+    public static Request ShowUserMenu() {
         System.out.println("Enter your command : \n1)Music library \n2)Search artist name\n" +
                 "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page");
         int command=inp.nextInt();
@@ -193,6 +197,12 @@ public class ClientMain {
                 json.put("Command","Search genre");
                 json.put("Genre",genre);
                 request.setJson(json);//create request
+                break;
+            case 6://View personal profile page
+                json=new JSONObject();
+                json.put("Command","View profile");
+                json.put("username",user.getString("username"));
+                request.setJson(json);
                 break;
         }
 
