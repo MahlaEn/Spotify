@@ -140,8 +140,12 @@ public class ClientMain {
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
                 return ShowUserMenu();
-            case "Searched profile":
-                System.out.println(response.getJson().getString("user"));
+            case "View profile":
+                response.setJson(new JSONObject(in.readLine()));//receive response from server
+                while (response.getJson().has("user")) {
+                    System.out.println(response.getJson().getString("user"));
+                    response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
         }
 
         return request;
