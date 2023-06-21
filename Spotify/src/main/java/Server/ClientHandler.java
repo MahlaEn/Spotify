@@ -17,6 +17,7 @@ class ClientHandler extends Thread{
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
+    private int ID;
     //TODO add user id and call queries using that
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
@@ -31,6 +32,10 @@ class ClientHandler extends Thread{
             while(request.getJson()!=null){
                 response = handle(request,out);//create new response
                 if(response.getJson()!=null) {
+                    if(response.getJson().getString("Status").equals("Logged out")){
+                        out.println(response.getJson().toString());//send response to client
+                        logout();
+                    }
                     out.println(response.getJson().toString());//send response to client
                 }
                 request.setJson(new JSONObject( in.readLine()));//receive request from client
@@ -49,5 +54,11 @@ class ClientHandler extends Thread{
                 e.printStackTrace();
             }
         }
+    }
+
+    private void logout() throws IOException {
+        socket.close();
+        clients.remove(this);
+        ServerMain.Client.remove(ID);
     }
 }

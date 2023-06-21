@@ -146,13 +146,17 @@ public class ClientMain {
                     System.out.println(response.getJson().getString("user"));
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
-        }
+                return ShowUserMenu();
+            case "Logged out":
+                System.out.println("Logged out successfully!:(");
+                return ShowMainMenu();
 
+        }
         return request;
     }
     public static Request ShowUserMenu() {
         System.out.println("Enter your command : \n1)Music library \n2)Search artist name\n" +
-                "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page");
+                "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page \n7)Logout");
         int command=inp.nextInt();
         JSONObject json;
         Request request = new Request();
@@ -206,6 +210,11 @@ public class ClientMain {
                 json=new JSONObject();
                 json.put("Command","View profile");
                 json.put("username",user.getString("username"));
+                request.setJson(json);
+                break;
+            case 7://Logout
+                json=new JSONObject();
+                json.put("Command","Logout");
                 request.setJson(json);
                 break;
         }

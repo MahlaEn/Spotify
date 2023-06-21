@@ -14,11 +14,15 @@ import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ServerMain {
 
     private final ServerSocket serverSocket;
     public static ArrayList<ClientHandler> clients = new ArrayList<>();
+    public static Map<Integer,Socket> Client = new HashMap<>();
 
     static MusicPlayer player=new MusicPlayer();
     public static void main(String[] args) throws IOException, SQLException, URISyntaxException {
@@ -35,6 +39,8 @@ public class ServerMain {
                 System.out.println("New client connected: " + socket.getRemoteSocketAddress());
                 ClientHandler handler = new ClientHandler(socket);
                 clients.add(handler);
+                String ID= String.valueOf(UUID.randomUUID());
+                Client.put(ID.hashCode(),socket);
                 handler.start();
             }
             catch (IOException e){
@@ -96,6 +102,11 @@ public class ServerMain {
                 ViewProfile(request,out);
                 res=new JSONObject();
                 res.put("Status","Searched profile");
+                response.setJson(res);
+                return response;
+            case "Logout":
+                res=new JSONObject();
+                res.put("Status","Logged out");
                 response.setJson(res);
                 return response;
 
