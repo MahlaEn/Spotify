@@ -19,11 +19,9 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ServerMain {
-
     private final ServerSocket serverSocket;
     public static ArrayList<ClientHandler> clients = new ArrayList<>();
     public static Map<Integer,Socket> Client = new HashMap<>();
-
     static MusicPlayer player=new MusicPlayer();
     public static void main(String[] args) throws IOException, SQLException, URISyntaxException {
         ServerMain server = new ServerMain(2345);
@@ -48,11 +46,10 @@ public class ServerMain {
             }
         }
     }
-
     public ServerMain(int portNumber) throws IOException {
         this.serverSocket = new ServerSocket(portNumber);
     }
-    public static Response handle(Request request,PrintWriter out) throws SQLException {
+    public static Response handle(Request request, PrintWriter out, int ID) throws SQLException {
         Response response=new Response();
         JSONObject req=request.getJson();
         switch (req.getString("Command")){
@@ -99,7 +96,7 @@ public class ServerMain {
                 response.setJson(res);
                 return response;
             case "View profile":
-                ViewProfile(request,out);
+                ViewProfile(request,out,ID);
                 res=new JSONObject();
                 res.put("Status","Searched profile");
                 response.setJson(res);
@@ -113,8 +110,7 @@ public class ServerMain {
         }
         return response;
     }
-
-    private static void ViewProfile(Request request, PrintWriter out) throws SQLException {
+    private static void ViewProfile(Request request, PrintWriter out, int ID) throws SQLException {
         ResultSet resultSet=DataBase.ViewProfile(request);
         JSONObject res=new JSONObject();
         res.put("Status","View profile");
@@ -208,7 +204,7 @@ public class ServerMain {
         switch (type){
             case "Music":
                 return (
-                    "TrackID: "+resultSet.getString("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
+                    "TrackID: "+resultSet.getInt("TrackID") + "\nTitle: "+ resultSet.getString("Title") +
                             "\nArtist: " + resultSet.getString("Artist") + "\nAlbum: " + resultSet.getString("Album") +
                             "\nGenre: " + resultSet.getString("Genre") +
                             "\nDuration: " + resultSet.getString("Duration") + "\nRelease Date: " + resultSet.getString("ReleaseDate") +
@@ -219,8 +215,8 @@ public class ServerMain {
                 return (
                         "Username: "+resultSet.getString("Username") + "\nEmail: "+ resultSet.getString("Email") +
                     "\nPassword: " + resultSet.getString("Password") + "\nBirthday: " + resultSet.getString("Birthday") +
-                    "\nPlaylistID: " + resultSet.getString("PlaylistID") +
-                    "\nUserID: " + resultSet.getString("UserID") +
+                    "\nPlaylistID: " + resultSet.getInt("PlaylistID") +
+                    "\nUserID: " + resultSet.getInt("UserID") +
                     "\n____________________________________"
                 );
 

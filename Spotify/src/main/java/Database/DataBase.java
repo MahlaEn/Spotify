@@ -60,18 +60,19 @@ public class DataBase {
             return response;
         }
         json.put("Status","Successfully signup");
-        response.setJson(json);
         String email = json.getString("Email");
         String imagePath = json.getString("ImagePath");
         if(imagePath.charAt(0)=='"'){
             imagePath=imagePath.substring(1,imagePath.length()-1);//Remove additional character
         }
-        UUID ID = UUID.randomUUID();
+        int ID = UUID.randomUUID().hashCode();
         String playlistID=UUID.randomUUID().toString();
         String date=json.getString("Birthday");
         String sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" +  username + "', '" +
-                email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID.hashCode() + "','" + ID.hashCode()  + "')";
+                email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID.hashCode() + "','" + ID  + "')";
 
+        json.put("id",ID);
+        response.setJson(json);
         query(sql);
         return response;
     }
@@ -84,6 +85,7 @@ public class DataBase {
         while(resultSet.next()){
             if(resultSet.getString("Username").equals(username) && resultSet.getString("Password").equals(password)){
                 json.put("Status","Successfully login");
+                json.put("id",resultSet.getString("UserID"));
                 response.setJson(json);
                 return response;
             }
@@ -93,7 +95,7 @@ public class DataBase {
         return response;
     }
     public static ResultSet ViewProfile(Request request){
-        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"User\" WHERE \"Username\" = " + "'" + request.getJson().getString("username") + "'");
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"User\" WHERE \"UserID\" = " + "'" + request.getJson().getInt("id") + "'");
         return resultSet;
     }
     public static ResultSet ShowMusic(Request request){

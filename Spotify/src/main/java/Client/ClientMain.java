@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class ClientMain {
     static Scanner inp = new Scanner(System.in);
-    static JSONObject user=new JSONObject();
+    static int ID;
     public static void main(String[] args) throws IOException {
         try {
             Socket socket = new Socket("127.0.0.1", 2345);
@@ -90,7 +90,7 @@ public class ClientMain {
         switch (resp.getString("Status")){
             case "Successfully login","Successfully signup":
                 System.out.println("WELCOME!");
-                user.put("username",resp.getString("username"));
+                ID=resp.getInt("id");
                 return ShowUserMenu();
 
             case "Fail login":
@@ -209,7 +209,7 @@ public class ClientMain {
             case 6://View personal profile page
                 json=new JSONObject();
                 json.put("Command","View profile");
-                json.put("username",user.getString("username"));
+                json.put("id",ID);
                 request.setJson(json);
                 break;
             case 7://Logout
