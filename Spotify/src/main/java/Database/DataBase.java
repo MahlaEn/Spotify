@@ -150,4 +150,16 @@ public class DataBase {
             query(sql);
         }
     }
+    public static void createPlaylist(String name, int userID) {
+        int playlistID=UUID.randomUUID().toString().hashCode();
+        String sql = "INSERT INTO\"Spotify\".\"Playlists\" VALUES ('" +  userID + "', '" + playlistID + "','"+ name + "')";
+        query(sql);
+    }
+
+    public static void addToPlaylist(String name, int userID, int trackID) throws SQLException {
+        ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"playlist\" = " + "'" + name + "'" + "AND" + "\"UserID\" = " + "'" + userID + "'");
+        int playlistID=resultSet.getInt("PlaylistID");
+        String sql = "INSERT INTO\"Spotify\".\"LinkPlaylist\" VALUES ('" +  playlistID + "', '" + trackID + "')";
+        query(sql);
+    }
 }

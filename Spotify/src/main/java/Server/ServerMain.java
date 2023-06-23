@@ -73,7 +73,8 @@ public class ServerMain {
                 return pauseSong(request);
             case "Like":
                 return likeSong(request,ID);
-
+            case "toPlaylist":
+                return addToPlaylist(request,ID);
             case "Search artist":
                 SearchArtist(request,out);
                 res=new JSONObject();
@@ -109,8 +110,28 @@ public class ServerMain {
                 res.put("Status","Logged out");
                 response.setJson(res);
                 return response;
+            case "Create playlist":
+                return CreatePlaylist(request,ID);
 
         }
+        return response;
+    }
+
+    private static Response addToPlaylist(Request request, int userID) throws SQLException {
+        DataBase.addToPlaylist(request.getJson().getString("Name"),userID,request.getJson().getInt("trackID"));
+        JSONObject res=new JSONObject();
+        Response response=new Response();
+        res.put("Status","added to playlist");
+        response.setJson(res);
+        return response;
+    }
+
+    private static Response CreatePlaylist(Request request, int userID) {
+        DataBase.createPlaylist(request.getJson().getString("Name"),userID);
+        JSONObject res=new JSONObject();
+        Response response=new Response();
+        res.put("Status","created playlist");
+        response.setJson(res);
         return response;
     }
 

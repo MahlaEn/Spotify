@@ -134,6 +134,16 @@ public class ClientMain {
                         json.put("trackID",response.getJson().getString("trackID"));
                         request.setJson(json);
                         return request;
+                    case 3://add to playlist
+                        System.out.println("Enter playlist name:");
+                        inp.nextLine();
+                        String name=inp.nextLine();
+                        json=new JSONObject();
+                        json.put("Command","toPlaylist");
+                        json.put("trackID",response.getJson().getString("trackID"));
+                        json.put("playlist",name);
+                        request.setJson(json);
+                        return request;
                 }
             case "pauseSong":
                 return ShowUserMenu();
@@ -155,13 +165,21 @@ public class ClientMain {
                 System.out.println("Logged out successfully!:(");
                 return ShowMainMenu();
             case "liked":
+                System.out.println("Music liked.");
                 return ShowUserMenu();
+            case "created playlist":
+                System.out.println("Playlist created.");
+                return ShowUserMenu();
+            case "added to playlist":
+                System.out.println("Added to playlist.");
+                return ShowUserMenu();
+
         }
         return request;
     }
     public static Request ShowUserMenu() {
         System.out.println("Enter your command : \n1)Music library \n2)Search artist name\n" +
-                "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page \n7)Logout");
+                "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page \n7)Create playlist \n8)View playlists \n9)Logout");
         int command=inp.nextInt();
         JSONObject json;
         Request request = new Request();
@@ -216,7 +234,20 @@ public class ClientMain {
                 json.put("Command","View profile");
                 request.setJson(json);
                 break;
-            case 7://Logout
+            case 7://Create playlist
+                System.out.println("Enter playlist name:");
+                inp.nextLine();
+                String playlist=inp.nextLine();
+                json=new JSONObject();
+                json.put("Command","Create playlist");
+                json.put("Name",playlist);
+                request.setJson(json);
+                break;
+
+            case 8://View playlist
+
+
+            case 9://Logout
                 json=new JSONObject();
                 json.put("Command","Logout");
                 request.setJson(json);
