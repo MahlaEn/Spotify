@@ -17,7 +17,7 @@ class ClientHandler extends Thread{
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private int ID;
+    private int ID;//TODO
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -31,6 +31,9 @@ class ClientHandler extends Thread{
             while(request.getJson()!=null){
                 response = handle(request,out,ID);//create new response
                 if(response.getJson()!=null) {
+                    if((response.getJson().getString("Status").equals("Successfully login")) || (response.getJson().getString("Status").equals("Successfully signup"))){
+                        ID=response.getJson().getInt("id");
+                    }
                     if(response.getJson().getString("Status").equals("Logged out")){
                         out.println(response.getJson().toString());//send response to client
                         logout();

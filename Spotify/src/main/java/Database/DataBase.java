@@ -65,11 +65,15 @@ public class DataBase {
         if(imagePath.charAt(0)=='"'){
             imagePath=imagePath.substring(1,imagePath.length()-1);//Remove additional character
         }
-        int ID = UUID.randomUUID().hashCode();
-        String playlistID=UUID.randomUUID().toString();
+        int ID = UUID.randomUUID().toString().hashCode();
+        int playlistID=UUID.randomUUID().toString().hashCode();
+
+        String sql = "INSERT INTO\"Spotify\".\"Playlists\" VALUES ('" +  ID + "', '" + playlistID + "','"+ "Likes" + "')";
+        query(sql);
+
         String date=json.getString("Birthday");
-        String sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" +  username + "', '" +
-                email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID.hashCode() + "','" + ID  + "')";
+        sql = "INSERT INTO\"Spotify\".\"User\" VALUES ('" +  username + "', '" +
+                email + "', '" + password + "','" + imagePath + "', '" + date + "', '" + playlistID + "','" + ID  + "')";
 
         json.put("id",ID);
         response.setJson(json);
@@ -111,6 +115,7 @@ public class DataBase {
         if(resultSet.next()) {
             json.put("Status", "Find song path");
             json.put("songPath",resultSet.getString("MusicPath"));
+            json.put("trackID",resultSet.getString("TrackID"));
             response.setJson(json);
         }
         return response;
@@ -130,5 +135,19 @@ public class DataBase {
     public static ResultSet SearchArtist(Request request) {
         ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"Artist\" = " + "'" + request.getJson().getString("Artist") + "'");
         return resultSet;
+    }
+    public static void Like(int userID, int trackID) throws SQLException {
+        System.out.println(userID);
+        ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"UserID\" = " + "'" + userID + "'" + "AND" + "\"playlist\" = " + "'" + "Likes" + "'");
+        resultSet.next();
+        int playlistID=resultSet.getInt("playlistID");
+        resultSet=query("SELECT * FROM \"Spotify\".\"LinkPlaylist\" WHERE \"playlistID\" = " + "'" + playlistID + "'" + "AND" + "\"musicID\" = " + "'" + trackID + "'");
+        if(resultSet.next()){
+            query("DELETE FROM \"Spotify\".\"LinkPlaylist\" WHERE \"playlistID\" = " + "'" + playlistID + "'" + "AND" + "\"musicID\" = " + "'" + trackID + "'");
+        }
+        else {
+            String sql = "INSERT INTO\"Spotify\".\"LinkPlaylist\" VALUES ('" + playlistID + "', '" + trackID + "')";
+            query(sql);
+        }
     }
 }

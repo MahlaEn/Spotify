@@ -13,7 +13,6 @@ import java.util.Scanner;
 
 public class ClientMain {
     static Scanner inp = new Scanner(System.in);
-    static int ID;
     public static void main(String[] args) throws IOException {
         try {
             Socket socket = new Socket("127.0.0.1", 2345);
@@ -90,7 +89,6 @@ public class ClientMain {
         switch (resp.getString("Status")){
             case "Successfully login","Successfully signup":
                 System.out.println("WELCOME!");
-                ID=resp.getInt("id");
                 return ShowUserMenu();
 
             case "Fail login":
@@ -121,13 +119,19 @@ public class ClientMain {
                         return ShowUserMenu();
                 }
             case "Find song path":
-                System.out.println("1)Pause");
+                System.out.println("1)Pause \n2)Like \n3)Add to playlist");
                 command=inp.nextInt();
                 switch (command){
                     case 1://pause
                         JSONObject json=new JSONObject();
                         json.put("Command","Pause song");
                         json.put("songPath",response.getJson().getString("songPath"));
+                        request.setJson(json);
+                        return request;
+                    case 2://like
+                        json=new JSONObject();
+                        json.put("Command","Like");
+                        json.put("trackID",response.getJson().getString("trackID"));
                         request.setJson(json);
                         return request;
                 }
@@ -150,7 +154,8 @@ public class ClientMain {
             case "Logged out":
                 System.out.println("Logged out successfully!:(");
                 return ShowMainMenu();
-
+            case "liked":
+                return ShowUserMenu();
         }
         return request;
     }
@@ -209,7 +214,6 @@ public class ClientMain {
             case 6://View personal profile page
                 json=new JSONObject();
                 json.put("Command","View profile");
-                json.put("id",ID);
                 request.setJson(json);
                 break;
             case 7://Logout

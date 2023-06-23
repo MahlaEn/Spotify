@@ -71,6 +71,9 @@ public class ServerMain {
 
             case "Pause song":
                 return pauseSong(request);
+            case "Like":
+                return likeSong(request,ID);
+
             case "Search artist":
                 SearchArtist(request,out);
                 res=new JSONObject();
@@ -110,6 +113,17 @@ public class ServerMain {
         }
         return response;
     }
+
+    private static Response likeSong(Request request, int ID) throws SQLException {
+        int trackID=request.getJson().getInt("trackID");
+        DataBase.Like(ID,trackID);
+        JSONObject res=new JSONObject();
+        Response response=new Response();
+        res.put("Status","liked");
+        response.setJson(res);
+        return response;
+    }
+
     private static void ViewProfile(Request request, PrintWriter out, int ID) throws SQLException {
         ResultSet resultSet=DataBase.ViewProfile(request);
         JSONObject res=new JSONObject();
