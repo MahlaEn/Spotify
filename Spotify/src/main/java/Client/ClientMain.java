@@ -102,7 +102,8 @@ public class ClientMain {
             case "Display songs","Show playlist":
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
                 while (response.getJson().has("Music")) {
-                    System.out.println(response.getJson().getString("Music"));
+                    System.out.println(response.getJson().getString("Music"));;
+                    receiveImage(response.getJson().getString("Cover"));
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
                 System.out.println("1)Play song \n2)Back to menu");
@@ -155,6 +156,7 @@ public class ClientMain {
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
                 while (response.getJson().has("Music")) {
                     System.out.println(response.getJson().getString("Music"));
+                    receiveImage(response.getJson().getString("Cover"));
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
                 return ShowUserMenu();
@@ -195,6 +197,15 @@ public class ClientMain {
         }
         return request;
     }
+
+    private static void receiveImage(String cover) throws IOException {
+        String encodedImageData = cover;
+        byte[] fileData = Base64.getDecoder().decode(encodedImageData);
+        String filePath = "D:\\Uni\\Ap\\Spotify\\Spotify\\cover.jpg";
+        Files.write(Paths.get(filePath), fileData);
+        System.out.println("Image file is saved at: " + filePath);
+    }
+
     public static Request ShowUserMenu() {
         System.out.println("Enter your command : \n1)Music library \n2)Search artist name\n" +
                 "3)Search song title \n4)Search album title \n5)Search genre \n6)View personal profile page \n7)Create playlist \n8)View playlists \n9)Logout");

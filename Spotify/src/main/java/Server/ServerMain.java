@@ -11,6 +11,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -257,8 +259,29 @@ public class ServerMain {
         while (resultSet.next()){
             res=new JSONObject();
             res.put("Music",toString(resultSet,"Music"));
+            res.put("Cover",songCover(resultSet.getString("Cover")));
             out.println(res);
         }
+    }
+    public static String songCover(String path) throws SQLException {
+        String encodedImage = null;
+        try {
+            // Read the image file as bytes
+            Path imageFilePath = Paths.get(path);
+            byte[] imageData = Files.readAllBytes(imageFilePath);
+
+            // Encode the image data using Base64
+            encodedImage = Base64.getEncoder().encodeToString(imageData);
+
+            // Create a JSONObject and add the encoded image as a property
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("imageData", encodedImage);
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encodedImage;
     }
     public static String toString(ResultSet resultSet,String type) throws SQLException {
         switch (type){

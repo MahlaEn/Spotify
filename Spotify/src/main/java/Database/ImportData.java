@@ -15,6 +15,7 @@ public class ImportData {
         Music SoldierSide=new Music(UUID.randomUUID().toString().hashCode(),"Soldier side","System of a down","Mezmerize","hard rock","3,39","2005",8.9,"D:\\Uni\\Ap\\Spotify\\Spotify\\src\\main\\resources\\SoldierSide.mp3");
         Music BornToTouchYourFeelings=new Music(UUID.randomUUID().toString().hashCode(),"Born To Touch Your Feelings","Scorpions","","hard rock","4,02","2017",9.1,"D:\\Uni\\Ap\\Spotify\\Spotify\\src\\main\\resources\\born_to_touch_your_feelings.mp3");
 
+
         musics.add(SoldierSide);
         musics.add(BornToTouchYourFeelings);
 
@@ -24,7 +25,8 @@ public class ImportData {
             if(!resultSet.next()){
                 String sql = "INSERT INTO\"Spotify\".\"Music\" VALUES ('"  + music.getTitle() + "', '" +
                         music.getArtist() + "', '" + music.getAlbum() + "','" + music.getGenre() + "', '" + music.getDuration() + "', '" +
-                        music.getReleaseDate() + "', '" + music.getPopularity() + "','" + music.getMusicPath() +"', '"+ music.getTrackID() + "')";
+                        music.getReleaseDate() + "', '" + music.getPopularity() + "','" + music.getMusicPath() +"', '"+ music.getTrackID() + "','" +
+                        "D:\\Uni\\Ap\\Spotify\\Spotify\\src\\main\\resources\\550x550.jpg" + "')";
                 DataBase.query(sql);
             }
         }
