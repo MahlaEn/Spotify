@@ -137,7 +137,6 @@ public class DataBase {
         return resultSet;
     }
     public static void Like(int userID, int trackID) throws SQLException {
-        System.out.println(userID);
         ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"UserID\" = " + "'" + userID + "'" + "AND" + "\"playlist\" = " + "'" + "Likes" + "'");
         resultSet.next();
         int playlistID=resultSet.getInt("playlistID");
@@ -158,9 +157,13 @@ public class DataBase {
 
     public static void addToPlaylist(String name, int userID, int trackID) throws SQLException {
         ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"playlist\" = " + "'" + name + "'" + "AND" + "\"UserID\" = " + "'" + userID + "'");
+        resultSet.next();
         int playlistID=resultSet.getInt("PlaylistID");
-        String sql = "INSERT INTO\"Spotify\".\"LinkPlaylist\" VALUES ('" +  playlistID + "', '" + trackID + "')";
-        query(sql);
+        resultSet=query("SELECT * FROM \"Spotify\".\"LinkPlaylist\" WHERE \"playlistID\" = " + "'" + playlistID + "'" + "AND" + "\"musicID\" = " + "'" + trackID + "'");
+        if(!resultSet.next()){
+            String sql = "INSERT INTO\"Spotify\".\"LinkPlaylist\" VALUES ('" +  playlistID + "', '" + trackID + "')";
+            query(sql);
+        }
     }
 
     public static ResultSet ViewPlaylists(Request request, int ID) {

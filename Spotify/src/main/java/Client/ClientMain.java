@@ -1,17 +1,23 @@
 package Client;
 
+import Server.MusicPlayer;
 import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.rmi.UnknownHostException;
-import java.sql.SQLException;
+import java.util.Base64;
 import java.util.Scanner;
 
 
 public class ClientMain {
+    private static DataOutputStream dataOutputStream = null;
+    private static DataInputStream dataInputStream = null;
+    static MusicPlayer player=new MusicPlayer();
     static Scanner inp = new Scanner(System.in);
     public static void main(String[] args) throws IOException {
         try {
@@ -29,7 +35,6 @@ public class ClientMain {
             response.setJson(new JSONObject(in.readLine()));//receive response from server
 
             while (response.getJson() != null) {
-
                 request = handle(response,out,in);//create new request
                 if(request.getJson()!=null) {
                     out.println(request.getJson().toString());////send request to server
@@ -40,8 +45,8 @@ public class ClientMain {
             System.out.println("Server not found: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("I/O error " + e.getMessage());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public static Request ShowMainMenu(){
@@ -83,7 +88,7 @@ public class ClientMain {
         }
         return request;
     }
-    public static Request handle(Response response,PrintWriter out,BufferedReader in) throws SQLException, IOException {
+    public static Request handle(Response response,PrintWriter out,BufferedReader in) throws Exception {
         Request request=new Request();
         JSONObject resp=response.getJson();
         switch (resp.getString("Status")){
@@ -119,15 +124,14 @@ public class ClientMain {
                         return ShowUserMenu();
                 }
             case "Find song path":
+                receiveFile(response.getJson());
                 System.out.println("1)Pause \n2)Like \n3)Add to playlist");
                 command=inp.nextInt();
+                JSONObject json=new JSONObject();
                 switch (command){
                     case 1://pause
-                        JSONObject json=new JSONObject();
-                        json.put("Command","Pause song");
-                        json.put("songPath",response.getJson().getString("songPath"));
-                        request.setJson(json);
-                        return request;
+                        player.pause();
+                        ShowUserMenu();
                     case 2://like
                         json=new JSONObject();
                         json.put("Command","Like");
@@ -140,8 +144,8 @@ public class ClientMain {
                         String name=inp.nextLine();
                         json=new JSONObject();
                         json.put("Command","toPlaylist");
-                        json.put("trackID",response.getJson().getString("trackID"));
-                        json.put("playlist",name);
+                        json.put("trackID",response.getJson().getInt("trackID"));
+                        json.put("Name",name);
                         request.setJson(json);
                         return request;
                 }
@@ -182,7 +186,7 @@ public class ClientMain {
                 System.out.println("Enter playlist to show songs :");
                 inp.nextLine();
                 String name=inp.nextLine();
-                JSONObject json=new JSONObject();
+                json=new JSONObject();
                 json.put("Command","Show playlist songs");
                 json.put("Name",name);
                 request.setJson(json);
@@ -273,5 +277,11 @@ public class ClientMain {
 
         return request;
     }
-
+    private static void receiveFile(JSONObject jsonObject) throws Exception {
+        String encodedData = jsonObject.getString("musicData");
+        byte[] fileData = Base64.getDecoder().decode(encodedData);
+        String filePath = "D:\\Uni\\Ap\\Spotify\\Spotify\\file.mp3";//TODO
+        Files.write(Paths.get(filePath), fileData);
+        player.play(filePath);
+    }
 }

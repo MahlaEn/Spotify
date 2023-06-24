@@ -6,23 +6,21 @@ import Shared.Request;
 import Shared.Response;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ServerMain {
+    private static DataOutputStream dataOutputStream = null;
+    private static DataInputStream dataInputStream = null;
     private final ServerSocket serverSocket;
     public static ArrayList<ClientHandler> clients = new ArrayList<>();
     public static Map<Integer,Socket> Client = new HashMap<>();
-    static MusicPlayer player=new MusicPlayer();
     public static void main(String[] args) throws IOException, SQLException, URISyntaxException {
         ServerMain server = new ServerMain(2345);
         DataBase.Init();
@@ -34,6 +32,8 @@ public class ServerMain {
         while(true){
             try{
                 Socket socket=serverSocket.accept();
+                dataInputStream = new DataInputStream(socket.getInputStream());
+                dataOutputStream = new DataOutputStream(socket.getOutputStream());
                 System.out.println("New client connected: " + socket.getRemoteSocketAddress());
                 ClientHandler handler = new ClientHandler(socket);
                 clients.add(handler);
@@ -49,7 +49,7 @@ public class ServerMain {
     public ServerMain(int portNumber) throws IOException {
         this.serverSocket = new ServerSocket(portNumber);
     }
-    public static Response handle(Request request, PrintWriter out, int ID) throws SQLException {
+    public static Response handle(Request request, PrintWriter out, int ID) throws Exception {
         Response response=new Response();
         JSONObject req=request.getJson();
         switch (req.getString("Command")){
@@ -73,10 +73,7 @@ public class ServerMain {
                 return response;
 
             case "Play song":
-                return playSong(request);
-
-            case "Pause song":
-                return pauseSong(request);
+                return playSong(request,out);
             case "Like":
                 return likeSong(request,ID);
             case "toPlaylist":
@@ -128,7 +125,6 @@ public class ServerMain {
         }
         return response;
     }
-
     private static void ShowPlaylist(Request request, PrintWriter out, int userID) throws SQLException {
         JSONObject res=new JSONObject();
         ResultSet resultSet=DataBase.SearchPlaylist(request,userID);
@@ -149,7 +145,6 @@ public class ServerMain {
             out.println(json);
         }
     }
-
     private static void ViewPlaylists(Request request, PrintWriter out, int ID) throws SQLException {
         ResultSet resultSet=DataBase.ViewPlaylists(request,ID);
         JSONObject res=new JSONObject();
@@ -161,7 +156,6 @@ public class ServerMain {
             out.println(res);
         }
     }
-
     private static Response addToPlaylist(Request request, int userID) throws SQLException {
         DataBase.addToPlaylist(request.getJson().getString("Name"),userID,request.getJson().getInt("trackID"));
         JSONObject res=new JSONObject();
@@ -170,7 +164,6 @@ public class ServerMain {
         response.setJson(res);
         return response;
     }
-
     private static Response CreatePlaylist(Request request, int userID) {
         DataBase.createPlaylist(request.getJson().getString("Name"),userID);
         JSONObject res=new JSONObject();
@@ -179,7 +172,6 @@ public class ServerMain {
         response.setJson(res);
         return response;
     }
-
     private static Response likeSong(Request request, int ID) throws SQLException {
         int trackID=request.getJson().getInt("trackID");
         DataBase.Like(ID,trackID);
@@ -189,7 +181,6 @@ public class ServerMain {
         response.setJson(res);
         return response;
     }
-
     private static void ViewProfile(Request request, PrintWriter out, int ID) throws SQLException {
         ResultSet resultSet=DataBase.ViewProfile(request);
         JSONObject res=new JSONObject();
@@ -252,22 +243,11 @@ public class ServerMain {
             out.println(json);
         }
     }
-    private static Response pauseSong(Request request) {
-        Response response = new Response();
-        JSONObject json=new JSONObject();
-        json.put("Status","pauseSong");
-        response.setJson(json);
-        player.pause();
-        return response;
-    }
-    private static Response playSong(Request request) throws SQLException {
+
+    private static Response playSong(Request request,PrintWriter out) throws Exception {
         JSONObject req=request.getJson();
-        String title=req.getString("Title");
-        String artist=req.getString("Artist");
         Response response = DataBase.PlaySong(request);
-        String songPath=response.getJson().getString("songPath");
-        player.play(songPath);
-        return response;
+        return sendFile(response,out);
     }
     public static void ShowMusics(Request request, PrintWriter out) throws SQLException {
         ResultSet resultSet=DataBase.ShowMusic(request);
@@ -303,5 +283,21 @@ public class ServerMain {
         }
 
         return type;
+    }
+    private static Response sendFile(Response response,PrintWriter out) throws Exception {
+        String path=response.getJson().getString("songPath");
+        int bytes = 0;
+        File file = new File(path);
+        byte[] fileData = Files.readAllBytes(file.toPath());
+
+        String encodedData = Base64.getEncoder().encodeToString(fileData);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("musicData", encodedData);
+        jsonObject.put("Status","Find song path");
+        jsonObject.put("trackID",response.getJson().getInt("trackID"));
+        response=new Response();
+        response.setJson(jsonObject);
+        return response;
     }
 }
