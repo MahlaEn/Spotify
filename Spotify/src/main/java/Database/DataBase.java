@@ -162,4 +162,27 @@ public class DataBase {
         String sql = "INSERT INTO\"Spotify\".\"LinkPlaylist\" VALUES ('" +  playlistID + "', '" + trackID + "')";
         query(sql);
     }
+
+    public static ResultSet ViewPlaylists(Request request, int ID) {
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"UserID\" = " + "'" + ID + "'");
+        return resultSet;
+    }
+
+    public static ResultSet ShowPlaylist(int playlistID) {
+        ResultSet resultSet=DataBase.query("SELECT * FROM \"Spotify\".\"LinkPlaylist\" WHERE \"playlistID\" = " + "'" + playlistID + "'");
+        return resultSet;
+    }
+
+    public static ResultSet SearchPlaylist(Request request, int userID) {
+        ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Playlists\" WHERE \"playlist\" = " +
+                "'" + request.getJson().getString("Name") + "'" + "AND" + "\"UserID\" = " + "'" + userID + "'");
+        return resultSet;
+    }
+
+    public static ResultSet findSong(int trackID) {
+        ResultSet resultSet=query("SELECT * FROM \"Spotify\".\"Music\" WHERE \"TrackID\" = " +
+            "'" + trackID + "'");
+        return resultSet;
+
+    }
 }

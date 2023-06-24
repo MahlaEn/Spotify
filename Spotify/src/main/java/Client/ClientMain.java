@@ -94,10 +94,10 @@ public class ClientMain {
             case "Fail login":
                 return ShowMainMenu();
 
-            case "Display songs":
+            case "Display songs","Show playlist":
                 response.setJson(new JSONObject(in.readLine()));//receive response from server
-                while (response.getJson().has("MusicData")) {
-                    System.out.println(response.getJson().getString("MusicData"));
+                while (response.getJson().has("Music")) {
+                    System.out.println(response.getJson().getString("Music"));
                     response.setJson(new JSONObject(in.readLine()));//receive response from server
                 }
                 System.out.println("1)Play song \n2)Back to menu");
@@ -173,6 +173,20 @@ public class ClientMain {
             case "added to playlist":
                 System.out.println("Added to playlist.");
                 return ShowUserMenu();
+            case "Display playlists":
+                response.setJson(new JSONObject(in.readLine()));//receive response from server
+                while (response.getJson().has("Name")) {
+                    System.out.println(response.getJson().getString("Name"));
+                    response.setJson(new JSONObject(in.readLine()));//receive response from server
+                }
+                System.out.println("Enter playlist to show songs :");
+                inp.nextLine();
+                String name=inp.nextLine();
+                JSONObject json=new JSONObject();
+                json.put("Command","Show playlist songs");
+                json.put("Name",name);
+                request.setJson(json);
+                return request;
 
         }
         return request;
@@ -244,8 +258,11 @@ public class ClientMain {
                 request.setJson(json);
                 break;
 
-            case 8://View playlist
-
+            case 8://View playlists
+                json=new JSONObject();
+                json.put("Command","View playlists");
+                request.setJson(json);//create request
+                break;
 
             case 9://Logout
                 json=new JSONObject();

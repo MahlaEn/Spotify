@@ -17,7 +17,7 @@ class ClientHandler extends Thread{
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;
-    private int ID;//TODO
+    private int ID;
     public ClientHandler(Socket socket) throws IOException {
         this.socket = socket;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

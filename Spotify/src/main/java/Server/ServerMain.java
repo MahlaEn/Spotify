@@ -65,6 +65,12 @@ public class ServerMain {
                 res.put("Status","Musics was showed");
                 response.setJson(res);
                 return response;
+            case "View playlists":
+                ViewPlaylists(request,out,ID);
+                res=new JSONObject();
+                res.put("Status","Playlists was showed");
+                response.setJson(res);
+                return response;
 
             case "Play song":
                 return playSong(request);
@@ -112,9 +118,48 @@ public class ServerMain {
                 return response;
             case "Create playlist":
                 return CreatePlaylist(request,ID);
+            case "Show playlist songs":
+                ShowPlaylist(request,out,ID);
+                res=new JSONObject();
+                res.put("Status","Playlist was showed");
+                response.setJson(res);
+                return response;
 
         }
         return response;
+    }
+
+    private static void ShowPlaylist(Request request, PrintWriter out, int userID) throws SQLException {
+        JSONObject res=new JSONObject();
+        ResultSet resultSet=DataBase.SearchPlaylist(request,userID);
+        resultSet.next();
+        int playlistID=resultSet.getInt("playlistID");
+        res.put("Status","Show playlist");
+        out.println(res);
+        resultSet=DataBase.ShowPlaylist(playlistID);
+        ArrayList<Integer>trackIDs=new ArrayList<Integer>();
+        while (resultSet.next()){
+            trackIDs.add(resultSet.getInt("musicID"));
+        }
+        for(int trackID:trackIDs){
+            JSONObject json=new JSONObject();
+            ResultSet resultSong=DataBase.findSong(trackID);
+            resultSong.next();
+            json.put("Music",toString(resultSong,"Music"));
+            out.println(json);
+        }
+    }
+
+    private static void ViewPlaylists(Request request, PrintWriter out, int ID) throws SQLException {
+        ResultSet resultSet=DataBase.ViewPlaylists(request,ID);
+        JSONObject res=new JSONObject();
+        res.put("Status","Display playlists");
+        out.println(res);
+        while (resultSet.next()){
+            res=new JSONObject();
+            res.put("Name",resultSet.getString("Playlist"));
+            out.println(res);
+        }
     }
 
     private static Response addToPlaylist(Request request, int userID) throws SQLException {
@@ -231,7 +276,7 @@ public class ServerMain {
         out.println(res);
         while (resultSet.next()){
             res=new JSONObject();
-            res.put("MusicData",toString(resultSet,"Music"));
+            res.put("Music",toString(resultSet,"Music"));
             out.println(res);
         }
     }
